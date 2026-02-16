@@ -1,0 +1,101 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Mouse",
+      "description": "Ergonomic wireless mouse with long battery life",
+      "price": 29.99,
+      "sku": "WM-001",
+      "stock": 150
+    },
+    {
+      "id": 2,
+      "name": "USB-C Hub",
+      "description": "7-in-1 USB-C hub with HDMI and SD card reader",
+      "price": 49.99,
+      "sku": "HUB-002",
+      "stock": 80
+    },
+    {
+      "id": 3,
+      "name": "Mechanical Keyboard",
+      "description": "RGB mechanical keyboard with Cherry MX switches",
+      "price": 129.99,
+      "sku": "KB-003",
+      "stock": 45
+    },
+    {
+      "name": "test test",
+      "description": "data",
+      "price": 10,
+      "sku": "sku-100",
+      "stock": 100,
+      "id": 4
+    }
+  ],
+  "invoices": [
+    {
+      "id": 1,
+      "invoiceNumber": "INV-2024-001",
+      "customerName": "Acme Corp",
+      "date": "2024-02-01",
+      "dueDate": "2024-02-15",
+      "status": "paid",
+      "items": [
+        {
+          "productId": 1,
+          "productName": "Wireless Mouse",
+          "quantity": 2,
+          "unitPrice": 29.99
+        }
+      ],
+      "subtotal": 59.98,
+      "tax": 6,
+      "total": 63.58
+    },
+    {
+      "invoiceNumber": "INV-1771233466573",
+      "customerName": "Fahd",
+      "date": "2026-02-16",
+      "dueDate": "2026-03-31",
+      "status": "draft",
+      "items": [
+        {
+          "productId": 2,
+          "productName": "USB-C Hub",
+          "quantity": 2,
+          "unitPrice": 49.99
+        },
+        {
+          "productId": 3,
+          "productName": "Mechanical Keyboard",
+          "quantity": 3,
+          "unitPrice": 129.99
+        }
+      ],
+      "subtotal": 489.95000000000005,
+      "tax": 10,
+      "total": 538.95,
+      "id": 2
+    },
+    {
+      "invoiceNumber": "INV-1771277302003",
+      "customerName": "Fahd test",
+      "date": "2026-02-16",
+      "dueDate": "2020-11-03",
+      "status": "draft",
+      "items": [
+        {
+          "productId": 2,
+          "productName": "Wireless Mouse",
+          "quantity": 100,
+          "unitPrice": 29.99
+        }
+      ],
+      "subtotal": 2999,
+      "tax": 0,
+      "total": 2999,
+      "id": 3
+    }
+  ]
+}

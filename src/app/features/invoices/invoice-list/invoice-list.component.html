@@ -1,0 +1,68 @@
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="m-0 text-2xl font-bold text-slate-900">Invoices</h1>
+      <p class="mt-1 text-sm text-slate-500">View and manage invoices</p>
+    </div>
+    <a
+      [routerLink]="['/invoices', 'new']"
+      class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-blue-700"
+      >Create invoice</a
+    >
+  </div>
+
+  @if (error(); as err) {
+    <div
+      class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      role="alert"
+    >
+      {{ err }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="flex items-center justify-center py-16">
+      <div class="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" aria-hidden="true"></div>
+    </div>
+  } @else if (invoices().length === 0) {
+    <div class="rounded-2xl border border-slate-200 bg-white px-4 py-16 text-center">
+      <p class="m-0 mb-2 font-medium text-slate-700">No invoices yet.</p>
+      <p class="m-0 mb-6 text-sm text-slate-500">Create your first invoice to get started.</p>
+      <a
+        [routerLink]="['/invoices', 'new']"
+        class="inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white no-underline transition-colors hover:bg-blue-700"
+        >Create your first invoice</a
+      >
+    </div>
+  } @else {
+    <div class="flex flex-col gap-3">
+      @for (inv of invoices(); track inv.id) {
+        <a
+          [routerLink]="['/invoices', inv.id]"
+          class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-5 py-4 text-inherit no-underline transition-shadow hover:shadow-md"
+        >
+          <div class="flex flex-col gap-1">
+            <span class="font-semibold text-slate-900">{{ inv.invoiceNumber }}</span>
+            <span class="text-sm text-slate-500">{{ inv.customerName }}</span>
+            <span class="text-xs text-slate-400">Due {{ inv.dueDate }} · {{ inv.items.length }} item(s)</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-slate-500">{{ inv.date }}</span>
+            <span class="text-right font-semibold text-slate-900 tabular-nums">{{ inv.total | number : '1.2-2' }}</span>
+            <span
+              class="rounded-full px-3 py-1 text-xs font-medium capitalize"
+              [ngClass]="{
+                'bg-slate-100 text-slate-600': inv.status === 'draft',
+                'bg-blue-500/15 text-blue-700': inv.status === 'sent',
+                'bg-emerald-50 text-emerald-700': inv.status === 'paid',
+              }"
+            >
+              {{ inv.status }}
+            </span>
+            <span class="text-slate-400">→</span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

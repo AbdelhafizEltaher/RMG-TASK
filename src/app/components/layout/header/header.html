@@ -1,0 +1,66 @@
+<header
+  class="sticky top-0 z-50 flex flex-wrap items-center gap-4 border-b border-slate-200 bg-white/95 px-4 py-3 shadow-sm backdrop-blur sm:gap-6 sm:px-6 sm:py-3.5"
+>
+  <!-- Logo -->
+  <a
+    routerLink="/home"
+    class="mr-auto flex items-center gap-2 no-underline outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-lg"
+  >
+    <span class="flex h-8 w-1 rounded-full bg-blue-600" aria-hidden="true"></span>
+    <span
+      class="text-lg font-bold tracking-tight text-slate-900 hover:text-blue-600 transition-colors sm:text-xl"
+      >RMG Task</span
+    >
+  </a>
+
+  <!-- Navigation -->
+  <nav
+    class="flex gap-0.5 max-sm:order-3 max-sm:w-full sm:gap-1"
+    role="navigation"
+    aria-label="Main"
+  >
+    <a
+      routerLink="/home"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      #home="routerLinkActive"
+      class="relative rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      [ngClass]="{
+        'bg-blue-500/10 text-blue-700 hover:bg-blue-500/15 hover:text-blue-800': home?.isActive,
+      }"
+    >
+      Home
+    </a>
+    <a
+      routerLink="/products"
+      routerLinkActive="active"
+      #products="routerLinkActive"
+      class="relative rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      [ngClass]="{
+        'bg-blue-500/10 text-blue-700 hover:bg-blue-500/15 hover:text-blue-800': products.isActive,
+      }"
+    >
+      Products
+    </a>
+    <a
+      routerLink="/invoices"
+      routerLinkActive="active"
+      #invoices="routerLinkActive"
+      class="relative rounded-lg px-3.5 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+      [ngClass]="{
+        'bg-blue-500/10 text-blue-700 hover:bg-blue-500/15 hover:text-blue-800': invoices.isActive,
+      }"
+    >
+      Invoices
+    </a>
+  </nav>
+
+  <!-- Logout -->
+  <button
+    type="button"
+    (click)="logout()"
+    class="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm transition-colors hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 max-sm:ml-auto"
+  >
+    Log out
+  </button>
+</header>

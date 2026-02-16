@@ -1,0 +1,286 @@
+<!-- native-calendar.component.html -->
+<div class="relative" [class]="className">
+  <!-- Label -->
+  @if (label) {
+    <label
+      class="block mb-1 font-medium"
+      [class.text-gray-400]="disabled"
+      [class.text-gray-700]="!disabled"
+      [class]="labelClass"
+    >
+      {{ label }}
+      @if (required) {
+        <span class="text-red-500">*</span>
+      }
+    </label>
+  }
+
+  <!-- Input Field -->
+  <div class="relative cursor-pointer rounded-md w-full">
+    <input
+      #inputRef
+      type="text"
+      [value]="displayValue"
+      [placeholder]="placeholder"
+      (click)="toggleCalendar()"
+      readonly
+      [disabled]="disabled"
+      [class]="
+        'w-full px-3 py-2 pr-10 cursor-pointer border rounded-md focus:outline-none !h-[40px] ' +
+        (value ? 'pr-16 ' : '') +
+        (disabled ? 'cursor-not-allowed bg-[#f3f4f6] text-gray-400 ' : 'text-gray-700 ') +
+        (errorMessage ? '!border-[#AF2027] ' : '') +
+        inputClassName
+      "
+    />
+
+    @if (value && !disabled) {
+      <button
+        type="button"
+        (click)="handleClearDate($event)"
+        class="absolute right-10 top-1/2 transform -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors text-gray-500 hover:text-gray-700"
+        title="Clear date"
+      >
+        <span class="text-lg leading-none">✕</span>
+      </button>
+    }
+
+    <span class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 pointer-events-none">
+      📅
+    </span>
+  </div>
+
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <p class="mt-1 text-sm text-[#AF2027]">{{ errorMessage }}</p>
+  }
+
+  <!-- Calendar Dropdown -->
+  @if (isOpen) {
+    <div
+      #calendarRef
+      class="bg-white rounded-lg shadow-lg border p-4 absolute top-full left-0 mt-1 z-[99999] w-full !min-w-[300px]"
+    >
+      <!-- Month Picker View -->
+      @if (viewMode === 'month') {
+        <div class="space-y-2">
+          <!-- Header -->
+          <div class="flex justify-center pt-1 relative items-center mb-4">
+            <button
+              (click)="setViewMode('year')"
+              class="absolute left-1 h-7 px-2 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center text-xs"
+              [disabled]="disabled"
+              type="button"
+            >
+              ←
+            </button>
+
+            <button
+              (click)="setViewMode('year')"
+              class="text-sm font-semibold text-[#111827] hover:text-[#2563eb] transition-colors cursor-pointer px-2 py-1 rounded"
+              [class.cursor-not-allowed]="disabled"
+              [class.opacity-50]="disabled"
+              [disabled]="disabled"
+              type="button"
+            >
+              {{ currentDate.getFullYear() }}
+            </button>
+
+            <button
+              (click)="setViewMode('calendar')"
+              class="absolute right-1 h-7 w-7 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center"
+              [disabled]="disabled"
+              type="button"
+            >
+              <span class="text-lg leading-none">✕</span>
+            </button>
+          </div>
+
+          <!-- Month Grid -->
+          <div class="grid grid-cols-3 gap-2">
+            @for (monthName of MONTHS; track monthName; let idx = $index) {
+              <button
+                (click)="!isMonthDisabled(idx) && handleMonthSelect(idx)"
+                class="h-10 text-sm font-normal transition-colors rounded-md"
+                [class.hover:bg-gray-100]="!isMonthDisabled(idx)"
+                [class.cursor-pointer]="!isMonthDisabled(idx)"
+                [class.cursor-not-allowed]="isMonthDisabled(idx)"
+                [class.opacity-50]="isMonthDisabled(idx)"
+                [class.text-[#111827]]="idx !== currentDate.getMonth() && !isMonthDisabled(idx)"
+                [class.text-[#6b7280]]="isMonthDisabled(idx)"
+                [style.background-color]="idx === currentDate.getMonth() ? '#2563eb' : null"
+                [style.color]="idx === currentDate.getMonth() ? 'white' : null"
+                [disabled]="isMonthDisabled(idx)"
+                type="button"
+              >
+                {{ monthName | slice: 0 : 3 }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Year Picker View -->
+      @else if (viewMode === 'year') {
+        <div class="space-y-2">
+          <!-- Header -->
+          <div class="flex justify-center pt-1 relative items-center mb-4">
+            <button
+              (click)="navigateYearRange('prev')"
+              class="absolute left-1 h-7 w-7 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center"
+              [disabled]="disabled"
+              type="button"
+            >
+              ←
+            </button>
+
+            <h2 class="text-sm font-semibold text-[#111827]">
+              {{ yearRangeStart }} - {{ yearRangeStart + 11 }}
+            </h2>
+
+            <button
+              (click)="navigateYearRange('next')"
+              class="absolute right-1 h-7 w-7 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center"
+              [disabled]="disabled"
+              type="button"
+            >
+              →
+            </button>
+          </div>
+
+          <!-- Year Grid -->
+          <div class="grid grid-cols-3 gap-2">
+            @for (year of [].constructor(12); track year; let i = $index) {
+              @let yearValue = yearRangeStart + i;
+              <button
+                (click)="!isYearDisabled(yearValue) && handleYearSelect(yearValue)"
+                class="h-10 text-sm font-normal transition-colors rounded-md"
+                [class.hover:bg-gray-100]="!isYearDisabled(yearValue)"
+                [class.cursor-pointer]="!isYearDisabled(yearValue)"
+                [class.cursor-not-allowed]="isYearDisabled(yearValue)"
+                [class.opacity-50]="isYearDisabled(yearValue)"
+                [class.text-[#111827]]="
+                  yearValue !== currentDate.getFullYear() && !isYearDisabled(yearValue)
+                "
+                [class.text-[#6b7280]]="isYearDisabled(yearValue)"
+                [style.background-color]="
+                  yearValue === currentDate.getFullYear() ? '#2563eb' : null
+                "
+                [style.color]="yearValue === currentDate.getFullYear() ? 'white' : null"
+                [disabled]="isYearDisabled(yearValue)"
+                type="button"
+              >
+                {{ yearValue }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Calendar View -->
+      @else {
+        <!-- Header -->
+        <div class="flex justify-center pt-1 relative items-center mb-4">
+          <button
+            (click)="navigateMonth('prev')"
+            class="absolute left-1 h-7 w-7 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center"
+            [class.opacity-30]="isPrevMonthDisabled()"
+            [class.cursor-not-allowed]="isPrevMonthDisabled()"
+            [disabled]="isPrevMonthDisabled()"
+            type="button"
+          >
+            ←
+          </button>
+
+          <div class="flex items-center gap-2">
+            <button
+              (click)="setViewMode('month')"
+              class="text-sm font-semibold text-[#111827] hover:text-[#2563eb] transition-colors cursor-pointer px-2 py-1 rounded"
+              [class.cursor-not-allowed]="disabled"
+              [class.opacity-50]="disabled"
+              [disabled]="disabled"
+              type="button"
+            >
+              {{ MONTHS[currentDate.getMonth()] }}
+            </button>
+            <button
+              (click)="setViewMode('year')"
+              class="text-sm font-semibold text-[#111827] hover:text-[#2563eb] transition-colors cursor-pointer px-2 py-1 rounded"
+              [class.cursor-not-allowed]="disabled"
+              [class.opacity-50]="disabled"
+              [disabled]="disabled"
+              type="button"
+            >
+              {{ currentDate.getFullYear() }}
+            </button>
+          </div>
+
+          <button
+            (click)="navigateMonth('next')"
+            class="absolute right-1 h-7 w-7 bg-gray-300 p-0 opacity-50 hover:opacity-100 transition-opacity rounded-md flex items-center justify-center"
+            [class.opacity-30]="isNextMonthDisabled()"
+            [class.cursor-not-allowed]="isNextMonthDisabled()"
+            [disabled]="isNextMonthDisabled()"
+            type="button"
+          >
+            →
+          </button>
+        </div>
+
+        <!-- Weekday headers -->
+        <div class="flex w-full items-center justify-between">
+          @for (day of WEEKDAYS; track day) {
+            <div class="text-[#313438] rounded-md w-9 font-normal text-[0.8rem] text-center py-2">
+              {{ day }}
+            </div>
+          }
+        </div>
+
+        <!-- Calendar grid -->
+        <div class="w-full border-collapse space-y-1">
+          @for (week of [0, 1, 2, 3, 4, 5]; track week) {
+            <div class="flex w-full items-center justify-between mt-2">
+              @for (day of calendarDays.slice(week * 7, (week + 1) * 7); track day.date) {
+                <div
+                  class="min-h-9 min-w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20"
+                >
+                  <button
+                    (click)="handleDateClick(day)"
+                    class="h-9 w-9 p-0 font-normal transition-colors rounded-md relative"
+                    [class.hover:bg-[#8b8b8b]]="!day.isDisabled && !day.isSelected"
+                    [class.cursor-pointer]="!day.isDisabled"
+                    [class.cursor-not-allowed]="day.isDisabled"
+                    [class.opacity-50]="day.isDisabled"
+                    [class.text-[#111827]]="day.isCurrentMonth && !day.isSelected"
+                    [class.text-[#6b7280]]="!day.isCurrentMonth"
+                    [class.opacity-100]="day.isSelected"
+                    [class.bg-[#fef2f2]]="day.isHighlighted && !day.isSelected"
+                    [class.text-[#dc2626]]="day.isHighlighted && !day.isSelected"
+                    [class.font-medium]="day.isHighlighted && !day.isSelected"
+                    [style.background-color]="
+                      day.isSelected ? '#2563eb' : day.isToday && !day.isSelected ? '#9ca3af' : null
+                    "
+                    [style.color]="
+                      day.isSelected ? 'white' : day.isToday && !day.isSelected ? 'white' : null
+                    "
+                    [disabled]="day.isDisabled"
+                    [attr.title]="day.date | date: 'fullDate'"
+                    type="button"
+                  >
+                    {{ day.date | date: 'd' }}
+                    @if (day.isHighlighted && !day.isSelected) {
+                      <div
+                        class="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full"
+                        style="background-color: #2563eb"
+                      ></div>
+                    }
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

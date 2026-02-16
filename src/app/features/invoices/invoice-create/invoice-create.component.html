@@ -1,0 +1,172 @@
+<div class="max-w-7xl mx-auto px-4 py-8 sm:px-6">
+  <a
+    [routerLink]="['/invoices']"
+    class="mb-4 inline-block text-[0.9375rem] text-slate-500 no-underline hover:text-blue-600"
+    >← Back to invoices</a
+  >
+  <h1 class="m-0 mb-6 text-2xl font-bold text-slate-900">Create invoice</h1>
+
+  @if (error(); as err) {
+    <div
+      class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      role="alert"
+    >
+      {{ err }}
+    </div>
+  }
+
+  <div class="mb-8">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="customer" class="text-sm font-medium text-slate-700">Customer name</label>
+        <input
+          id="customer"
+          type="text"
+          [(ngModel)]="customerName"
+          name="customerName"
+          placeholder="Customer or company name"
+          class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        />
+      </div>
+
+      <app-custom-calendar
+        [(value)]="dueDate"
+        placeholder="Select due date"
+        [required]="true"
+        label="Due date"
+      ></app-custom-calendar>
+    </div>
+    <div class="mt-4 flex flex-col gap-1.5 max-w-48">
+      <label for="tax" class="text-sm font-medium text-slate-700">Tax (%)</label>
+      <input
+        id="tax"
+        type="number"
+        [(ngModel)]="tax"
+        name="tax"
+        min="0"
+        step="0.01"
+        class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+      />
+    </div>
+  </div>
+
+  <div class="mb-6">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <h2 class="m-0 text-lg font-semibold text-slate-900">Line items</h2>
+      <button
+        type="button"
+        (click)="addLine()"
+        [disabled]="products().length === 0"
+        class="rounded-lg border border-slate-300 bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        Add line
+      </button>
+    </div>
+
+    @if (items.length === 0) {
+      <p class="m-0 mb-4 text-[0.9375rem] text-slate-500">
+        Click "Add line" to add products to this invoice.
+      </p>
+    } @else {
+      <div class="mb-4">
+        <table class="w-full border-collapse text-[0.9375rem]">
+          <thead>
+            <tr>
+              <th
+                class="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-600"
+              >
+                Product
+              </th>
+              <th
+                class="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-600"
+              >
+                Qty
+              </th>
+              <th
+                class="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-600"
+              >
+                Unit price
+              </th>
+              <th
+                class="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-600"
+              >
+                Total
+              </th>
+              <th
+                class="border-b border-slate-200 bg-slate-50 px-3 py-2 text-left font-semibold text-slate-600"
+              ></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track $index; let i = $index) {
+              <tr>
+                <td class="border-b border-slate-200 px-3 py-2">
+                  <app-custom-dropdown
+                    [options]="products()"
+                    [(value)]="item.productId"
+                    placeholder="Select product"
+                    [enableFilter]="true"
+                    [disabled]="products().length === 0"
+                    [required]="true"
+                  ></app-custom-dropdown>
+                </td>
+                <td class="border-b border-slate-200 px-3 py-2">
+                  <input
+                    type="number"
+                    [(ngModel)]="item.quantity"
+                    name="qty_{{ i }}"
+                    min="1"
+                    class="w-20 rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                  />
+                </td>
+                <td class="border-b border-slate-200 px-3 py-2">
+                  {{ item.unitPrice | number: '1.2-2' }}
+                </td>
+                <td class="border-b border-slate-200 px-3 py-2">
+                  {{ item.quantity * item.unitPrice | number: '1.2-2' }}
+                </td>
+                <td class="border-b border-slate-200 px-3 py-2">
+                  <button
+                    type="button"
+                    (click)="removeLine(i)"
+                    class="rounded border-0 px-2 py-1 text-xs font-medium text-red-600 bg-red-50 transition-colors hover:bg-red-600 hover:text-white"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <div class="ml-auto max-w-64 rounded-lg bg-slate-50 p-4">
+      <div class="flex justify-between py-1 text-[0.9375rem]">
+        <span class="text-slate-600">Subtotal</span>
+        <span class="text-slate-900">{{ getSubtotal() | number: '1.2-2' }}</span>
+      </div>
+      <div class="flex justify-between py-1 text-[0.9375rem]">
+        <span class="text-slate-600">Tax ({{ tax }}%)</span>
+        <span class="text-slate-900">{{ getSubtotal() * (tax / 100) | number: '1.2-2' }}</span>
+      </div>
+      <div
+        class="mt-2 flex justify-between border-t border-slate-200 pt-2 text-[1.0625rem] font-bold"
+      >
+        <span class="text-slate-900">Total</span>
+        <span class="text-slate-900">{{ getTotal() | number: '1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <button
+      type="button"
+      (click)="submit()"
+      [disabled]="loading()"
+      class="rounded-lg border-0 bg-blue-600 px-5 py-2.5 text-base font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      {{ loading() ? 'Creating…' : 'Create invoice' }}
+    </button>
+  </div>
+</div>

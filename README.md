@@ -1,59 +1,110 @@
-# RMGTask
+# RMG Task — Sample SPA
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.4.
+A single-page application (SPA) with **user authentication**, **product management**, and **invoice creation**, using a **fake API** (json-server) for data—no real backend required.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- **Login** — Simulated auth with hardcoded credentials; redirects to Home on success.
+- **Home** — Dashboard with navigation to Products and Invoices.
+- **Product management** — Create, list, edit, and delete products (full CRUD).
+- **Invoices** — Create invoices with line items (products, quantity, price) and view the list.
 
-```bash
-ng serve
-```
+## Tech Stack
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **Angular 21** (standalone components, signals where used)
+- **Tailwind CSS** for styling
+- **json-server** as mock REST API
+- **RxJS** for async data
 
-## Code scaffolding
+## Prerequisites
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Node.js 18+
+- npm 10+
 
-```bash
-ng generate component component-name
-```
+## Getting Started
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### 1. Install dependencies
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+### 2. Start the mock API
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+In a **separate terminal**, run:
 
 ```bash
-ng test
+npm run api
 ```
 
-## Running end-to-end tests
+This starts json-server on **http://localhost:3000** and serves data from `db.json` (products and invoices). Keep this terminal open.
 
-For end-to-end (e2e) testing, run:
+### 3. Start the Angular app
 
 ```bash
-ng e2e
+npm start
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Open **http://localhost:4200** in your browser.
 
-## Additional Resources
+### 4. Log in
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Use these demo credentials:
+
+- **Username:** `admin`
+- **Password:** `admin123`
+
+After login you’ll be redirected to the Home page. From there you can open **Products** and **Invoices**.
+
+## Scripts
+
+| Command     | Description                          |
+|------------|--------------------------------------|
+| `npm start`| Run the Angular app (dev server)     |
+| `npm run api` | Run json-server (mock API) on port 3000 |
+| `npm run build` | Production build                  |
+| `npm test` | Run unit tests                       |
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── core/                 # Auth, API config
+│   │   ├── api/
+│   │   └── auth/
+│   ├── features/
+│   │   ├── login/
+│   │   ├── home/
+│   │   ├── products/        # Product CRUD
+│   │   └── invoices/        # Invoice list & create
+│   └── layout/              # Shell with nav and outlet
+├── styles.css               # Global styles and CSS variables
+db.json                      # Mock data for json-server
+proxy.conf.json              # Optional proxy (see below)
+```
+
+## Mock API (json-server)
+
+- **Base URL:** `http://localhost:3000`
+- **Endpoints:**
+  - `GET/POST /products` — list and create products
+  - `GET/PATCH/DELETE /products/:id` — get, update, delete a product
+  - `GET/POST /invoices` — list and create invoices
+  - `GET /invoices/:id` — get one invoice
+
+Data is stored in `db.json` and persisted by json-server while it’s running. Restarting `npm run api` resets data to the initial `db.json` content.
+
+## Responsiveness
+
+The UI is responsive: layout, tables, and forms adapt to small screens (e.g. stacked fields, simplified tables).
+
+## Design Notes
+
+- Clean, minimal UI with a consistent color palette (CSS variables in `styles.css`).
+- Primary actions use a blue accent; errors use red; success states use green.
+- Navigation is in the header when logged in; “Log out” clears the session and redirects to Login.
+
+## License
+
+MIT.

@@ -1,0 +1,8 @@
+<div class="mx-auto max-w-[600px] px-4 py-8 sm:px-6">
+  <a [routerLink]="['/products']" class="mb-6 inline-block text-[0.9375rem] text-slate-500 no-underline hover:text-blue-600">← Back to products</a>
+  <div class="mb-8">
+    <h1 class="m-0 text-2xl font-bold text-slate-900">New product</h1>
+    <p class="mt-1 text-sm text-slate-500">Add a new product to your catalog.</p>
+  </div>
+  <app-product-form [loading]="loading" (submitForm)="onSubmit($event)"></app-product-form>
+</div>

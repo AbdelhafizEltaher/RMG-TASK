@@ -1,0 +1,22 @@
+<div class="mx-auto max-w-[600px] px-4 py-8 sm:px-6">
+  <a [routerLink]="['/products']" class="mb-6 inline-block text-[0.9375rem] text-slate-500 no-underline hover:text-blue-600">← Back to products</a>
+
+  @if (loadError(); as err) {
+    <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">{{ err }}</div>
+  } @else if (product(); as p) {
+    <div class="mb-8">
+      <h1 class="m-0 text-2xl font-bold text-slate-900">Edit product</h1>
+      <p class="mt-1 text-sm text-slate-500">Update {{ p.name }}.</p>
+      <a [routerLink]="['/products', p.id]" class="mt-2 inline-block text-sm text-blue-600 hover:underline">View product →</a>
+    </div>
+    <app-product-form
+      [product]="p"
+      [loading]="loading()"
+      (submitForm)="onSubmit($event)"
+    ></app-product-form>
+  } @else {
+    <div class="flex items-center justify-center py-16">
+      <div class="h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" aria-hidden="true"></div>
+    </div>
+  }
+</div>
