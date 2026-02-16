@@ -4,15 +4,24 @@ A single-page application (SPA) with **user authentication**, **product manageme
 
 ## Features
 
-- **Login** — Simulated auth with hardcoded credentials; redirects to Home on success.
-- **Home** — Dashboard with navigation to Products and Invoices.
-- **Product management** — Create, list, edit, and delete products (full CRUD).
-- **Invoices** — Create invoices with line items (products, quantity, price) and view the list.
+- **Login** — Simulated auth with hardcoded credentials; redirects to Dashboard on success.
+- **Dashboard (Home)** — Statistics overview: total products, total invoices, revenue, low-stock count, and invoice breakdown by status (draft/sent/paid). Quick actions to add a product or create an invoice.
+- **Products**
+  - **List** — Table with name, SKU, description, price, stock; low-stock badge; View / Edit / Delete.
+  - **View** — Product detail page (name, SKU, description, price, stock, actions).
+  - **Create** — New product form with basic details and pricing & inventory sections.
+  - **Edit** — Edit existing product with link to view.
+- **Invoices**
+  - **List** — Cards with invoice number, customer, due date, item count, total, status; click to view.
+  - **View** — Invoice detail page (header, line items table, subtotal, tax, total).
+  - **Create** — New invoice with customer, due date, tax, and line items (product picker, qty, unit price).
+- **Shared UI** — Reusable **custom dropdown** (filter, clear, optional label) and **custom calendar** (date picker) used in forms.
+- **Layout** — Sticky header with logo, nav (Home, Products, Invoices), and Log out.
 
 ## Tech Stack
 
-- **Angular 21** (standalone components, signals where used)
-- **Tailwind CSS** for styling
+- **Angular 21** (standalone components, signals)
+- **Tailwind CSS** for styling (no component CSS files)
 - **json-server** as mock REST API
 - **RxJS** for async data
 
@@ -54,34 +63,41 @@ Use these demo credentials:
 - **Username:** `admin`
 - **Password:** `admin123`
 
-After login you’ll be redirected to the Home page. From there you can open **Products** and **Invoices**.
+After login you’ll be redirected to the Dashboard. From there you can open **Products** and **Invoices**, or use the quick actions to add a product or create an invoice.
 
 ## Scripts
 
-| Command     | Description                          |
-|------------|--------------------------------------|
-| `npm start`| Run the Angular app (dev server)     |
-| `npm run api` | Run json-server (mock API) on port 3000 |
-| `npm run build` | Production build                  |
-| `npm test` | Run unit tests                       |
+| Command        | Description                              |
+|----------------|------------------------------------------|
+| `npm start`    | Run the Angular app (dev server)         |
+| `npm run api`  | Run json-server (mock API) on port 3000   |
+| `npm run build`| Production build                         |
+| `npm test`     | Run unit tests                           |
 
 ## Project Structure
 
 ```
 src/
 ├── app/
-│   ├── core/                 # Auth, API config
-│   │   ├── api/
-│   │   └── auth/
+│   ├── components/
+│   │   ├── common/           # Reusable: custom-dropdown, custom-calendar
+│   │   └── layout/           # Shell: header, main, layout
+│   ├── enums/                # HTTP paths, etc.
 │   ├── features/
 │   │   ├── login/
-│   │   ├── home/
-│   │   ├── products/        # Product CRUD
-│   │   └── invoices/        # Invoice list & create
-│   └── layout/              # Shell with nav and outlet
-├── styles.css               # Global styles and CSS variables
-db.json                      # Mock data for json-server
-proxy.conf.json              # Optional proxy (see below)
+│   │   ├── home/             # Dashboard with stats
+│   │   ├── products/         # List, view, new, edit, form
+│   │   └── invoices/         # List, view, create
+│   ├── guards/               # auth.guard
+│   ├── interfaces/           # Product, invoice, shared types
+│   ├── services/             # Auth, product, invoice API
+│   ├── app.config.ts
+│   ├── app.routes.ts
+│   └── ...
+├── environment/              # API URL config
+├── styles.css                # Global styles + Tailwind
+db.json                       # Mock data for json-server
+proxy.conf.json               # Proxy /api to json-server (if used)
 ```
 
 ## Mock API (json-server)
@@ -95,15 +111,30 @@ proxy.conf.json              # Optional proxy (see below)
 
 Data is stored in `db.json` and persisted by json-server while it’s running. Restarting `npm run api` resets data to the initial `db.json` content.
 
+## Routes
+
+| Path                    | Description        |
+|-------------------------|--------------------|
+| `/login`                | Login page         |
+| `/home`                 | Dashboard          |
+| `/products`             | Product list       |
+| `/products/new`         | New product        |
+| `/products/:id`        | Product detail     |
+| `/products/:id/edit`   | Edit product       |
+| `/invoices`             | Invoice list       |
+| `/invoices/new`        | Create invoice     |
+| `/invoices/:id`        | Invoice detail     |
+
 ## Responsiveness
 
-The UI is responsive: layout, tables, and forms adapt to small screens (e.g. stacked fields, simplified tables).
+The UI is responsive: dashboard grid, tables (e.g. SKU/description columns hidden on small screens), and forms adapt to mobile. Header nav wraps; sticky header with backdrop blur.
 
 ## Design Notes
 
-- Clean, minimal UI with a consistent color palette (CSS variables in `styles.css`).
-- Primary actions use a blue accent; errors use red; success states use green.
-- Navigation is in the header when logged in; “Log out” clears the session and redirects to Login.
+- **Tailwind CSS** used across all features (no component `.css` files).
+- Consistent palette: slate for text/backgrounds, blue for primary actions, amber for warnings (low stock), emerald for success/paid.
+- Dashboard uses KPI cards, status pills, and quick actions.
+- Product and invoice lists show key details and link to view/detail pages.
 
 ## License
 
